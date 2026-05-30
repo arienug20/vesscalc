@@ -3,7 +3,7 @@ import { Card, Button, Input, Select, Badge } from './components/ui';
 import { calcCylindricalShellThickness } from './calculations/vessel/shell';
 import { calcHeadThickness } from './calculations/vessel/head';
 import MaterialService from './data/materials';
-import type { ShellInput, HeadInput, HeadType } from './types';
+import type { ShellInput, HeadInput, HeadType, ShellResult, HeadResult, NozzleResult } from './types';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'vessel' | 'hx'>('vessel');
@@ -61,7 +61,7 @@ function VesselCalculator() {
   const [headType, setHeadType] = useState<HeadType>('ellipsoidal');
   const [diameter, setDiameter] = useState(1200);
 
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ShellResult | HeadResult | NozzleResult | null>(null);
 
   const handleCalculate = () => {
     try {

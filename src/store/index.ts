@@ -56,17 +56,25 @@ export const useVesselStore = create<VesselStore>((set, get) => ({
   }
 }));
 
+interface HXProject {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  [key: string]: unknown;
+}
+
 interface HXState {
-  projects: any[];
+  projects: HXProject[];
   activeProjectId: string | null;
 }
 
 interface HXActions {
-  createProject: (data: any) => string;
-  updateProject: (id: string, updates: Partial<any>) => void;
+  createProject: (data: Record<string, unknown>) => string;
+  updateProject: (id: string, updates: Partial<HXProject>) => void;
   deleteProject: (id: string) => void;
   setActiveProject: (id: string | null) => void;
-  getActiveProject: () => any;
+  getActiveProject: () => HXProject | undefined;
 }
 
 type HXStore = HXState & HXActions;
