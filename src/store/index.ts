@@ -1,26 +1,12 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { get, set, del } from 'idb-keyval';
 import type { VesselProject, AppSettings } from '@/types';
 
-// Custom IndexedDB storage for Zustand persist
-const idbStorage = {
-  getItem: async (name: string) => {
-    const value = await get(name);
-    return value ?? null;
-  },
-  setItem: async (name: string, value: unknown) => {
-    await set(name, value);
-  },
-  removeItem: async (name: string) => {
-    await del(name);
-  }
-};
-
-interface VesselStore {
+interface VesselState {
   projects: VesselProject[];
   activeProjectId: string | null;
+}
 
+interface VesselActions {
   createProject: (project: Omit<VesselProject, 'id' | 'createdAt' | 'updatedAt'>) => string;
   updateProject: (id: string, updates: Partial<VesselProject>) => void;
   deleteProject: (id: string) => void;
@@ -28,58 +14,54 @@ interface VesselStore {
   getActiveProject: () => VesselProject | undefined;
 }
 
-export const useVesselStore = create<VesselStore>()(
-  persist(
-    (set, get) => ({
-      projects: [],
-      activeProjectId: null,
+type VesselStore = VesselState & VesselActions;
 
-      createProject: (projectData) => {
-        const id = crypto.randomUUID();
-        const now = new Date().toISOString();
-        const project: VesselProject = {
-          ...projectData,
-          id,
-          createdAt: now,
-          updatedAt: now
-        };
-        set((state) => ({ projects: [...state.projects, project] }));
-        return id;
-      },
+export const useVesselStore = create<VesselStore>((set, get) => ({
+  projects: [],
+  activeProjectId: null,
 
-      updateProject: (id, updates) => {
-        set((state) => ({
-          projects: state.projects.map((p) =>
-            p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
-          )
-        }));
-      },
+  createProject: (projectData) => {
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const project: VesselProject = {
+      ...projectData,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    set((state) => ({ projects: [...state.projects, project] }));
+    return id;
+  },
 
-      deleteProject: (id) => {
-        set((state) => ({
-          projects: state.projects.filter((p) => p.id !== id),
-          activeProjectId: state.activeProjectId === id ? null : state.activeProjectId
-        }));
-      },
+  updateProject: (id, updates) => {
+    set((state) => ({
+      projects: state.projects.map((p) =>
+        p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
+      )
+    }));
+  },
 
-      setActiveProject: (id) => set({ activeProjectId: id }),
+  deleteProject: (id) => {
+    set((state) => ({
+      projects: state.projects.filter((p) => p.id !== id),
+      activeProjectId: state.activeProjectId === id ? null : state.activeProjectId
+    }));
+  },
 
-      getActiveProject: () => {
-        const state = get();
-        return state.projects.find((p) => p.id === state.activeProjectId);
-      }
-    }),
-    {
-      name: 'vesscalc-vessels',
-      storage: createJSONStorage(() => idbStorage)
-    }
-  )
-);
+  setActiveProject: (id) => set({ activeProjectId: id }),
 
-interface HXStore {
+  getActiveProject: () => {
+    const state = get();
+    return state.projects.find((p) => p.id === state.activeProjectId);
+  }
+}));
+
+interface HXState {
   projects: any[];
   activeProjectId: string | null;
+}
 
+interface HXActions {
   createProject: (data: any) => string;
   updateProject: (id: string, updates: Partial<any>) => void;
   deleteProject: (id: string) => void;
@@ -87,71 +69,60 @@ interface HXStore {
   getActiveProject: () => any;
 }
 
-export const useHXStore = create<HXStore>()(
-  persist(
-    (set, get) => ({
-      projects: [],
-      activeProjectId: null,
+type HXStore = HXState & HXActions;
 
-      createProject: (data) => {
-        const id = crypto.randomUUID();
-        const now = new Date().toISOString();
-        const project = {
-          ...data,
-          id,
-          createdAt: now,
-          updatedAt: now
-        };
-        set((state) => ({
-          projects: [...state.projects, project]
-        }));
-        return id;
-      },
+export const useHXStore = create<HXStore>((set, get) => ({
+  projects: [],
+  activeProjectId: null,
 
-      updateProject: (id, updates) => {
-        set((state) => ({
-          projects: state.projects.map((p) =>
-            p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
-          )
-        }));
-      },
+  createProject: (data) => {
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const project = {
+      ...data,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    set((state) => ({
+      projects: [...state.projects, project]
+    }));
+    return id;
+  },
 
-      deleteProject: (id) => {
-        set((state) => ({
-          projects: state.projects.filter((p) => p.id !== id),
-          activeProjectId: state.activeProjectId === id ? null : state.activeProjectId
-        }));
-      },
+  updateProject: (id, updates) => {
+    set((state) => ({
+      projects: state.projects.map((p) =>
+        p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
+      )
+    }));
+  },
 
-      setActiveProject: (id) => set({ activeProjectId: id }),
+  deleteProject: (id) => {
+    set((state) => ({
+      projects: state.projects.filter((p) => p.id !== id),
+      activeProjectId: state.activeProjectId === id ? null : state.activeProjectId
+    }));
+  },
 
-      getActiveProject: () => {
-        const state = get();
-        return state.projects.find((p) => p.id === state.activeProjectId);
-      }
-    }),
-    {
-      name: 'vesscalc-hx',
-      storage: createJSONStorage(() => idbStorage)
-    }
-  )
-);
+  setActiveProject: (id) => set({ activeProjectId: id }),
 
-export const useSettingsStore = create<AppSettings>()(
-  persist(
-    (set) => ({
-      units: 'metric',
-      language: 'en',
-      defaultMaterial: 'SA-516 Gr.70',
-      defaultJointEfficiency: 1.0,
-      defaultCorrosionAllowance: 3.0,
-      theme: 'system',
-      autoRecalculate: true,
-      showFormulas: true,
-      decimalPlaces: 2,
-      companyName: '',
-      engineerName: ''
-    }),
-    { name: 'vesscalc-settings' }
-  )
-);
+  getActiveProject: () => {
+    const state = get();
+    return state.projects.find((p) => p.id === state.activeProjectId);
+  }
+}));
+
+export const useSettingsStore = create<AppSettings>(() => ({
+  units: 'metric',
+  language: 'en',
+  defaultMaterial: 'SA-516 Gr.70',
+  defaultJointEfficiency: 1.0,
+  defaultCorrosionAllowance: 3.0,
+  theme: 'system',
+  autoRecalculate: true,
+  showFormulas: true,
+  decimalPlaces: 2,
+  companyName: '',
+  engineerName: ''
+}));

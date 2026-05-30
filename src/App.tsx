@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, Button, Input, Select, Badge } from './components/ui';
 import { calcCylindricalShellThickness } from './calculations/vessel/shell';
 import { calcHeadThickness } from './calculations/vessel/head';
-import { calcNozzleReinforcement } from './calculations/vessel/nozzle';
 import MaterialService from './data/materials';
 import type { ShellInput, HeadInput, HeadType } from './types';
 

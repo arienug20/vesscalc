@@ -163,7 +163,7 @@ export interface ASMEMaterial {
   type: 'plate' | 'forging' | 'pipe' | 'tube' | 'bolt' | 'bar';
   productForm: string;
   UNSnumber?: string;
-  PNumber: number;
+  PNumber: string;
   groupNumber?: number;
   allowableStressTable: {
     temperature_C: number;

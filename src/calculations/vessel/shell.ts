@@ -12,7 +12,6 @@ export function calcCylindricalShellThickness(input: ShellInput): ShellResult {
   const P_limit_circ = 0.385 * S * E;
 
   const t_long = (P * R) / (2 * S * E + 0.4 * P);
-  const P_limit_long = 1.25 * S * E;
 
   const t_required = Math.max(t_circ, t_long);
   const governingStress = t_circ >= t_long ? 'circumferential' : 'longitudinal';
